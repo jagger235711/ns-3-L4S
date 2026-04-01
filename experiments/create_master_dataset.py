@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # ================= CONFIGURATION =================
-OUTPUT_BASE = "exps/results_scenario_2_modif"  # Adjust to your correct folder
+OUTPUT_BASE = "exps/results"  # Adjust to your correct folder
 NUM_RUNS = 30
 METRICS_FOLDER = "metrics"  # Subfolder to organize the metrics CSVs
 
