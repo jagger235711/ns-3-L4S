@@ -12,8 +12,12 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
 # %% 配置
-METRICS_DIR = "metrics"
-OUTPUT_DIR = "plots"
+
+# 基于项目根目录设置路径
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(SCRIPT_DIR)  # patches 的父目录就是项目根目录
+METRICS_DIR = os.path.join(PROJECT_ROOT, "ns-3.46", "exps", "results", "metrics")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "ns-3.46", "exps", "results", "plots")
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # 颜色方案
