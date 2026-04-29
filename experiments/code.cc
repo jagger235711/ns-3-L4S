@@ -41,54 +41,39 @@ NodeContainer n1n2;
 NodeContainer n2n3;
 NodeContainer n3n4;
 NodeContainer n3n5;
-NodeContainer n2n6;
-NodeContainer n2n7;
-NodeContainer n3n8;
-NodeContainer n3n9;
 
 Ipv4InterfaceContainer i0i2;
 Ipv4InterfaceContainer i1i2;
 Ipv4InterfaceContainer i2i3;
 Ipv4InterfaceContainer i3i4;
 Ipv4InterfaceContainer i3i5;
-Ipv4InterfaceContainer i2i6;
-Ipv4InterfaceContainer i2i7;
-Ipv4InterfaceContainer i3i8;
-Ipv4InterfaceContainer i3i9;
-Ipv4InterfaceContainer i3i2; // For N3->N2 reverse direction
 
-void
-TraceCwnd(std::ofstream* ofStream, uint32_t oldCwnd, uint32_t newCwnd)
+void TraceCwnd(std::ofstream *ofStream, uint32_t oldCwnd, uint32_t newCwnd)
 {
     *ofStream << Simulator::Now().GetSeconds() << "," << newCwnd << std::endl;
 }
 
-void
-TraceRtt(std::ofstream* ofStream, Time oldRtt, Time newRtt)
+void TraceRtt(std::ofstream *ofStream, Time oldRtt, Time newRtt)
 {
     *ofStream << Simulator::Now().GetSeconds() << "," << newRtt.GetSeconds() << std::endl;
 }
 
-void
-TraceQueueProb(std::ofstream* stream, double oldVal, double newVal)
+void TraceQueueProb(std::ofstream *stream, double oldVal, double newVal)
 {
     *stream << Simulator::Now().GetSeconds() << " " << newVal << std::endl;
 }
 
-void
-TraceQueueSojourn(std::ofstream* stream, Time sojourn)
+void TraceQueueSojourn(std::ofstream *stream, Time sojourn)
 {
     *stream << Simulator::Now().GetSeconds() << " " << sojourn.GetSeconds() << std::endl;
 }
 
-void
-TraceQueueMark(std::ofstream* stream, Ptr<const QueueDiscItem> item, const char* reason)
+void TraceQueueMark(std::ofstream *stream, Ptr<const QueueDiscItem> item, const char *reason)
 {
     *stream << Simulator::Now().GetSeconds() << " " << reason << std::endl;
 }
 
-void
-ScheduleN4TraceConnections(std::ofstream* cwndStream, std::ofstream* rttStream)
+void ScheduleN4TraceConnections(std::ofstream *cwndStream, std::ofstream *rttStream)
 {
     Config::ConnectWithoutContext("/NodeList/4/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
                                   MakeBoundCallback(&TraceCwnd, cwndStream));
@@ -96,8 +81,7 @@ ScheduleN4TraceConnections(std::ofstream* cwndStream, std::ofstream* rttStream)
                                   MakeBoundCallback(&TraceRtt, rttStream));
 }
 
-void
-ScheduleN5TraceConnections(std::ofstream* cwndStream, std::ofstream* rttStream)
+void ScheduleN5TraceConnections(std::ofstream *cwndStream, std::ofstream *rttStream)
 {
     Config::ConnectWithoutContext("/NodeList/5/$ns3::TcpL4Protocol/SocketList/0/CongestionWindow",
                                   MakeBoundCallback(&TraceCwnd, cwndStream));
@@ -105,10 +89,9 @@ ScheduleN5TraceConnections(std::ofstream* cwndStream, std::ofstream* rttStream)
                                   MakeBoundCallback(&TraceRtt, rttStream));
 }
 
-void
-MonitorThroughput(Ptr<FlowMonitor> flowMonitor,
-                  Ptr<Ipv4FlowClassifier> classifier,
-                  std::string filename)
+void MonitorThroughput(Ptr<FlowMonitor> flowMonitor,
+                       Ptr<Ipv4FlowClassifier> classifier,
+                       std::string filename)
 {
     std::ofstream thrFile;
     thrFile.open(filename, std::ios::out | std::ios::app);
@@ -144,10 +127,8 @@ MonitorThroughput(Ptr<FlowMonitor> flowMonitor,
     Simulator::Schedule(Seconds(1), &MonitorThroughput, flowMonitor, classifier, filename);
 }
 
-void
-BuildAppsTest()
+void BuildAppsTest()
 {
-    // Sinks for original flows (N0, N1)
     uint16_t port1 = 50000;
     Address sinkLocalAddress1(InetSocketAddress(Ipv4Address::GetAny(), port1));
     PacketSinkHelper sinkHelper1("ns3::TcpSocketFactory", sinkLocalAddress1);
@@ -162,48 +143,15 @@ BuildAppsTest()
     sinkApp2.Start(Seconds(sink_start_time));
     sinkApp2.Stop(Seconds(sink_stop_time));
 
-    // Sinks for new flows (N6, N7 on N2; N8, N9 on N3)
-    uint16_t port3 = 50002;
-    Address sinkLocalAddress3(InetSocketAddress(Ipv4Address::GetAny(), port3));
-    PacketSinkHelper sinkHelper3("ns3::TcpSocketFactory", sinkLocalAddress3);
-    ApplicationContainer sinkApp3 = sinkHelper3.Install(n2n6.Get(0)); // N2 as sink for N6
-    sinkApp3.Start(Seconds(sink_start_time));
-    sinkApp3.Stop(Seconds(sink_stop_time));
-
-    uint16_t port4 = 50003;
-    Address sinkLocalAddress4(InetSocketAddress(Ipv4Address::GetAny(), port4));
-    PacketSinkHelper sinkHelper4("ns3::TcpSocketFactory", sinkLocalAddress4);
-    ApplicationContainer sinkApp4 = sinkHelper4.Install(n2n7.Get(0)); // N2 as sink for N7
-    sinkApp4.Start(Seconds(sink_start_time));
-    sinkApp4.Stop(Seconds(sink_stop_time));
-
-    uint16_t port5 = 50004;
-    Address sinkLocalAddress5(InetSocketAddress(Ipv4Address::GetAny(), port5));
-    PacketSinkHelper sinkHelper5("ns3::TcpSocketFactory", sinkLocalAddress5);
-    ApplicationContainer sinkApp5 = sinkHelper5.Install(n3n8.Get(0)); // N3 as sink for N8
-    sinkApp5.Start(Seconds(sink_start_time));
-    sinkApp5.Stop(Seconds(sink_stop_time));
-
-    uint16_t port6 = 50005;
-    Address sinkLocalAddress6(InetSocketAddress(Ipv4Address::GetAny(), port6));
-    PacketSinkHelper sinkHelper6("ns3::TcpSocketFactory", sinkLocalAddress6);
-    ApplicationContainer sinkApp6 = sinkHelper6.Install(n3n9.Get(0)); // N3 as sink for N9
-    sinkApp6.Start(Seconds(sink_start_time));
-    sinkApp6.Stop(Seconds(sink_stop_time));
-
-    // TCP congestion control configuration
     Config::Set("/NodeList/0/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpCubic::GetTypeId()));
     Config::Set("/NodeList/1/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpPrague::GetTypeId()));
     Config::Set("/NodeList/4/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpCubic::GetTypeId()));
     Config::Set("/NodeList/5/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpPrague::GetTypeId()));
-    // New nodes: mix of Cubic and Prague
-    Config::Set("/NodeList/6/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpCubic::GetTypeId()));
-    Config::Set("/NodeList/7/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpPrague::GetTypeId()));
-    Config::Set("/NodeList/8/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpCubic::GetTypeId()));
-    Config::Set("/NodeList/9/$ns3::TcpL4Protocol/SocketType", TypeIdValue(TcpPrague::GetTypeId()));
 
-    // Original BulkSend connections (steady traffic)
+    // Connection one
     BulkSendHelper clientHelper1("ns3::TcpSocketFactory", Address());
+
+    // Connection two
     BulkSendHelper clientHelper2("ns3::TcpSocketFactory", Address());
 
     ApplicationContainer clientApps1;
@@ -219,69 +167,9 @@ BuildAppsTest()
     clientApps2.Add(clientHelper2.Install(n3n5.Get(1)));
     clientApps2.Start(Seconds(client_start_time));
     clientApps2.Stop(Seconds(client_stop_time));
-
-    // New OnOff connections for N6, N7, N8, N9 (bursty traffic)
-    OnOffHelper clientHelper3("ns3::TcpSocketFactory", Address());
-    OnOffHelper clientHelper4("ns3::TcpSocketFactory", Address());
-    OnOffHelper clientHelper5("ns3::TcpSocketFactory", Address());
-    OnOffHelper clientHelper6("ns3::TcpSocketFactory", Address());
-
-    // Random start times for bursty traffic (0-30s)
-    Ptr<UniformRandomVariable> startTimeRand = CreateObject<UniformRandomVariable>();
-    startTimeRand->SetAttribute("Min", DoubleValue(0.0));
-    startTimeRand->SetAttribute("Max", DoubleValue(30.0));
-
-    // N6 -> N3 (through N2-N3 bottleneck)
-    AddressValue remoteAddress3(InetSocketAddress(i2i3.GetAddress(0), port3));
-    clientHelper3.SetAttribute("Remote", remoteAddress3);
-    clientHelper3.SetAttribute("OnTime", StringValue("ns3::UniformRandomVariable[Min=1.0|Max=5.0]"));
-    clientHelper3.SetAttribute("OffTime", StringValue("ns3::UniformRandomVariable[Min=2.0|Max=10.0]"));
-    clientHelper3.SetAttribute("DataRate", StringValue("8Mbps"));
-    ApplicationContainer clientApps3;
-    clientApps3.Add(clientHelper3.Install(n2n6.Get(1)));
-    double startTime6 = startTimeRand->GetValue();
-    clientApps3.Start(Seconds(client_start_time + startTime6));
-    clientApps3.Stop(Seconds(client_stop_time));
-
-    // N7 -> N3 (through N2-N3 bottleneck)
-    AddressValue remoteAddress4(InetSocketAddress(i2i3.GetAddress(0), port4));
-    clientHelper4.SetAttribute("Remote", remoteAddress4);
-    clientHelper4.SetAttribute("OnTime", StringValue("ns3::UniformRandomVariable[Min=1.0|Max=5.0]"));
-    clientHelper4.SetAttribute("OffTime", StringValue("ns3::UniformRandomVariable[Min=2.0|Max=10.0]"));
-    clientHelper4.SetAttribute("DataRate", StringValue("8Mbps"));
-    ApplicationContainer clientApps4;
-    clientApps4.Add(clientHelper4.Install(n2n7.Get(1)));
-    double startTime7 = startTimeRand->GetValue();
-    clientApps4.Start(Seconds(client_start_time + startTime7));
-    clientApps4.Stop(Seconds(client_stop_time));
-
-    // N8 -> N2 (through N3-N2 bottleneck)
-    AddressValue remoteAddress5(InetSocketAddress(i3i2.GetAddress(0), port5));
-    clientHelper5.SetAttribute("Remote", remoteAddress5);
-    clientHelper5.SetAttribute("OnTime", StringValue("ns3::UniformRandomVariable[Min=1.0|Max=5.0]"));
-    clientHelper5.SetAttribute("OffTime", StringValue("ns3::UniformRandomVariable[Min=2.0|Max=10.0]"));
-    clientHelper5.SetAttribute("DataRate", StringValue("8Mbps"));
-    ApplicationContainer clientApps5;
-    clientApps5.Add(clientHelper5.Install(n3n8.Get(1)));
-    double startTime8 = startTimeRand->GetValue();
-    clientApps5.Start(Seconds(client_start_time + startTime8));
-    clientApps5.Stop(Seconds(client_stop_time));
-
-    // N9 -> N2 (through N3-N2 bottleneck)
-    AddressValue remoteAddress6(InetSocketAddress(i3i2.GetAddress(0), port6));
-    clientHelper6.SetAttribute("Remote", remoteAddress6);
-    clientHelper6.SetAttribute("OnTime", StringValue("ns3::UniformRandomVariable[Min=1.0|Max=5.0]"));
-    clientHelper6.SetAttribute("OffTime", StringValue("ns3::UniformRandomVariable[Min=2.0|Max=10.0]"));
-    clientHelper6.SetAttribute("DataRate", StringValue("8Mbps"));
-    ApplicationContainer clientApps6;
-    clientApps6.Add(clientHelper6.Install(n3n9.Get(1)));
-    double startTime9 = startTimeRand->GetValue();
-    clientApps6.Start(Seconds(client_start_time + startTime9));
-    clientApps6.Stop(Seconds(client_stop_time));
 }
 
-int
-main(int argc, char* argv[])
+int main(int argc, char *argv[])
 {
     std::string dualQCoupledPiSquareLinkDataRate = "10Mbps";
     std::string dualQCoupledPiSquareLinkDelay = "15ms";
@@ -311,29 +199,20 @@ main(int argc, char* argv[])
 
     cmd.Parse(argc, argv);
 
-NS_LOG_INFO("Create nodes");
-NodeContainer c;
-c.Create(10);
-Names::Add("N0", c.Get(0));
-Names::Add("N1", c.Get(1));
-Names::Add("N2", c.Get(2));
-Names::Add("N3", c.Get(3));
-Names::Add("N4", c.Get(4));
-Names::Add("N5", c.Get(5));
-Names::Add("N6", c.Get(6));
-Names::Add("N7", c.Get(7));
-Names::Add("N8", c.Get(8));
-Names::Add("N9", c.Get(9));
+    NS_LOG_INFO("Create nodes");
+    NodeContainer c;
+    c.Create(6);
+    Names::Add("N0", c.Get(0));
+    Names::Add("N1", c.Get(1));
+    Names::Add("N2", c.Get(2));
+    Names::Add("N3", c.Get(3));
+    Names::Add("N4", c.Get(4));
+    Names::Add("N5", c.Get(5));
     n0n2 = NodeContainer(c.Get(0), c.Get(2));
     n1n2 = NodeContainer(c.Get(1), c.Get(2));
     n2n3 = NodeContainer(c.Get(2), c.Get(3));
     n3n4 = NodeContainer(c.Get(3), c.Get(4));
     n3n5 = NodeContainer(c.Get(3), c.Get(5));
-    // Additional node pairs for extra flows
-    n2n6 = NodeContainer(c.Get(2), c.Get(6));
-    n2n7 = NodeContainer(c.Get(2), c.Get(7));
-    n3n8 = NodeContainer(c.Get(3), c.Get(8));
-    n3n9 = NodeContainer(c.Get(3), c.Get(9));
 
     Config::SetDefault("ns3::TcpSocketBase::UseEcn", StringValue("On"));
     Config::SetDefault("ns3::TcpDctcp::UseEct0", BooleanValue(false));
@@ -368,10 +247,6 @@ Names::Add("N9", c.Get(9));
     NetDeviceContainer devn2n3;
     NetDeviceContainer devn3n4;
     NetDeviceContainer devn3n5;
-    NetDeviceContainer devn2n6;
-    NetDeviceContainer devn2n7;
-    NetDeviceContainer devn3n8;
-    NetDeviceContainer devn3n9;
 
     QueueDiscContainer queueDiscs;
 
@@ -406,31 +281,6 @@ Names::Add("N9", c.Get(9));
     p2p.SetChannelAttribute("Delay", StringValue("0ms"));
     devn3n5 = p2p.Install(n3n5);
     tchPfifo.Install(devn3n5);
-
-    // Additional links for new nodes
-    p2p.SetQueue("ns3::DropTailQueue");
-    p2p.SetDeviceAttribute("DataRate", StringValue("1Gbps"));
-    p2p.SetChannelAttribute("Delay", StringValue("0ms"));
-    devn2n6 = p2p.Install(n2n6);
-    tchPfifo.Install(devn2n6);
-
-    p2p.SetQueue("ns3::DropTailQueue");
-    p2p.SetDeviceAttribute("DataRate", StringValue("1Gbps"));
-    p2p.SetChannelAttribute("Delay", StringValue("0ms"));
-    devn2n7 = p2p.Install(n2n7);
-    tchPfifo.Install(devn2n7);
-
-    p2p.SetQueue("ns3::DropTailQueue");
-    p2p.SetDeviceAttribute("DataRate", StringValue("1Gbps"));
-    p2p.SetChannelAttribute("Delay", StringValue("0ms"));
-    devn3n8 = p2p.Install(n3n8);
-    tchPfifo.Install(devn3n8);
-
-    p2p.SetQueue("ns3::DropTailQueue");
-    p2p.SetDeviceAttribute("DataRate", StringValue("1Gbps"));
-    p2p.SetChannelAttribute("Delay", StringValue("0ms"));
-    devn3n9 = p2p.Install(n3n9);
-    tchPfifo.Install(devn3n9);
 
     // -----------------------------------------------------------------------
 
@@ -476,39 +326,23 @@ Names::Add("N9", c.Get(9));
     }
     // -----------------------------------------------------------------------
 
-NS_LOG_INFO("Assign IP Addresses");
-Ipv4AddressHelper ipv4;
+    NS_LOG_INFO("Assign IP Addresses");
+    Ipv4AddressHelper ipv4;
 
-ipv4.SetBase("10.1.1.0", "255.255.255.0");
-i0i2 = ipv4.Assign(devn0n2);
+    ipv4.SetBase("10.1.1.0", "255.255.255.0");
+    i0i2 = ipv4.Assign(devn0n2);
 
-ipv4.SetBase("10.1.2.0", "255.255.255.0");
-i1i2 = ipv4.Assign(devn1n2);
+    ipv4.SetBase("10.1.2.0", "255.255.255.0");
+    i1i2 = ipv4.Assign(devn1n2);
 
-ipv4.SetBase("10.1.3.0", "255.255.255.0");
-i2i3 = ipv4.Assign(devn2n3);
+    ipv4.SetBase("10.1.3.0", "255.255.255.0");
+    i2i3 = ipv4.Assign(devn2n3);
 
-ipv4.SetBase("10.1.4.0", "255.255.255.0");
-i3i4 = ipv4.Assign(devn3n4);
+    ipv4.SetBase("10.1.4.0", "255.255.255.0");
+    i3i4 = ipv4.Assign(devn3n4);
 
-ipv4.SetBase("10.1.5.0", "255.255.255.0");
-i3i5 = ipv4.Assign(devn3n5);
-
-ipv4.SetBase("10.1.6.0", "255.255.255.0");
-i2i6 = ipv4.Assign(devn2n6);
-
-ipv4.SetBase("10.1.7.0", "255.255.255.0");
-i2i7 = ipv4.Assign(devn2n7);
-
-ipv4.SetBase("10.1.8.0", "255.255.255.0");
-i3i8 = ipv4.Assign(devn3n8);
-
-ipv4.SetBase("10.1.9.0", "255.255.255.0");
-i3i9 = ipv4.Assign(devn3n9);
-
-    // Assign IP for N3->N2 reverse direction (needed for N8,N9 -> N2 traffic)
-    ipv4.SetBase("10.1.10.0", "255.255.255.0");
-    i3i2 = ipv4.Assign(devn2n3); // Note: devn2n3 already exists, assign second interface
+    ipv4.SetBase("10.1.5.0", "255.255.255.0");
+    i3i5 = ipv4.Assign(devn3n5);
 
     // Set up the routing
     Ipv4GlobalRoutingHelper::PopulateRoutingTables();
