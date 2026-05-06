@@ -1,0 +1,44 @@
+{
+	"files": [
+		{
+			"path": "ns-3.46/src/traffic-control/model/dualq-coupled-pi2-queue-disc.h",
+			"bookmarks": [
+				{
+					"line": 51,
+					"column": 0,
+					"label": "dualq"
+				}
+			]
+		},
+		{
+			"path": "ns-3.46/src/traffic-control/model/dualq-coupled-pi2-queue-disc.cc",
+			"bookmarks": [
+				{
+					"line": 51,
+					"column": 0,
+					"label": "dualQ预置参数"
+				}
+			]
+		},
+		{
+			"path": "experiments/code.cc",
+			"bookmarks": [
+				{
+					"line": 173,
+					"column": 0,
+					"label": ""
+				},
+				{
+					"line": 252,
+					"column": 0,
+					"label": ""
+				},
+				{
+					"line": 259,
+					"column": 0,
+					"label": ""
+				}
+			]
+		}
+	]
+}

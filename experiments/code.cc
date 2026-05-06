@@ -171,7 +171,7 @@ void BuildAppsTest()
 
 int main(int argc, char *argv[])
 {
-    std::string dualQCoupledPiSquareLinkDataRate = "10Mbps";
+    std::string dualQCoupledPiSquareLinkDataRate = "100Mbps";
     std::string dualQCoupledPiSquareLinkDelay = "15ms";
 
     std::string pathOut;
@@ -251,13 +251,13 @@ int main(int argc, char *argv[])
     QueueDiscContainer queueDiscs;
 
     p2p.SetQueue("ns3::DropTailQueue");
-    p2p.SetDeviceAttribute("DataRate", StringValue("1Gbps"));
+    p2p.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
     p2p.SetChannelAttribute("Delay", StringValue("0ms"));
     devn0n2 = p2p.Install(n0n2);
     tchPfifo.Install(devn0n2);
 
     p2p.SetQueue("ns3::DropTailQueue");
-    p2p.SetDeviceAttribute("DataRate", StringValue("1Gbps"));
+    p2p.SetDeviceAttribute("DataRate", StringValue("10Mbps"));
     p2p.SetChannelAttribute("Delay", StringValue("0ms"));
     devn1n2 = p2p.Install(n1n2);
     tchPfifo.Install(devn1n2);
